@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Carga de Bootstrap 5 (CSS) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>Lista de Productos</title>
+</head>
+<body>
+
+<div class="header">
+    <h1>Nuestros Productos</h1>
+    <p class="lead">Explora nuestro catálogo de productos</p>
+    <!-- Ícono de carrito a la derecha -->
+    <button id="cartButton" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+        <i class="fas fa-shopping-cart"></i>
+    </button>
+    <div id="authDropdownContainer"></div>
+</div>
+
+<div class="container">
+    <!-- Barra de búsqueda -->
+    <div class="search-container">
+        <div class="input-group mb-3">
+            <input type="text" id="productSearchInput" class="form-control" placeholder="Buscar por nombre del producto" aria-label="Product Name">
+        </div>
+    </div>
+
+    <!-- Contenedor donde se mostrarán todos los productos o los detalles de búsqueda -->
+    <div id="product-list" class="row"></div>
+</div>
+
+<!-- Modal del carrito (Offcanvas) -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="cartOffcanvasLabel">Carrito de Compras</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <!-- Aquí se agregarán dinámicamente los productos del carrito -->
+        <div id="cart">
+            <p>Tu carrito está vacío.</p>
+        </div>
+        <!-- Botón de Confirmar Compra dentro del modal -->
+        <button id="confirmPurchaseButton" class="btn btn-success w-100 mt-3">Confirmar Compra</button>
+    </div>
+</div>
+
+
+<!-- Alerta personalizada -->
+<div id="customAlert" class="alert" style="display: none;">
+    <span id="alertMessage"></span>
+    <button id="closeAlert" class="close-btn">&times;</button>
+</div>
+
+
+<!-- Bootstrap 5 Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Tus scripts adicionales -->
+<script src="/js/products.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/email.js"></script>
+<script src="/js/pedido.js"></script>
+<script src="/js/alert.js"></script>
+<script src="/js/main.js"></script>
+
+<script>
+    $(document).ready(function() {
+        const authDropdownContainer = $('#authDropdownContainer');
+
+        function updateAuthDropdown() {
+            const accessToken = localStorage.getItem('accessToken');
+            const userRole = localStorage.getItem('userRole');
+            const authDropdownContainer = $('#authDropdownContainer');
+
+            if (accessToken) {
+                const dropdownHtml = `
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="authDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Mi Cuenta
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="authDropdown">
+                    <li><a class="dropdown-item" href="/pedido">Mis pedidos</a></li>
+                    ${userRole === 'ADMIN' ? `
+                    <li class="dropdown-submenu">
+                        <a class="dropdown-item" href="#" id="adminMenu">Admin</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/lista_pedidos">Lista de Pedidos</a></li>
+                            <li><a class="dropdown-item" href="/stocks">Lista de productos</a></li>
+                            <li><a class="dropdown-item" href="/product_create">Crear producto</a></li>
+                            <li><a class="dropdown-item" href="/validator">Validaciones de pedido</a></li>
+                        </ul>
+                    </li>
+                    ` : ''}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" id="logoutLink">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        `;
+                authDropdownContainer.html(dropdownHtml);
+
+                $('#logoutLink').on('click', function (event) {
+                    event.preventDefault();
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('userRole');
+                    location.reload();
+                });
+            } else {
+                authDropdownContainer.html(`
+            <button class="btn" id="loginButton">Iniciar Sesión</button>
+        `);
+
+                $('#loginButton').on('click', function () {
+                    window.location.href = '/login';
+                });
+            }
+        }
+
+        // Initial rendering of the dropdown or login button
+        updateAuthDropdown();
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Stocks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 50px;
+        }
+        h1 {
+            text-align: center;
+            color: #f4f4f9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0876eb;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="header">
+    <h1>Lista de Stocks</h1>
+<!--    <button id="cartButton" onclick="window.location.href='/product';">-->
+<!--        <i class="fas fa-shopping-cart"></i>-->
+<!--    </button>-->
+    <div id="authDropdownContainer"></div>
+</div>
+<div class="container">
+
+    <table id="products-table">
+        <thead>
+        <tr>
+            <th>ID del Producto</th>
+            <th>Nombre del Producto</th>
+            <th>Precio</th>
+            <th>Marca</th>
+            <th>Cantidad</th>
+            <th>Modificar Cantidad</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function getProducts() {
+        $.ajax({
+            url: '/products',
+            method: 'GET',
+            success: function(products) {
+                const tableBody = $('#products-table tbody');
+                tableBody.empty();
+
+                if (Array.isArray(products) && products.length > 0) {
+                    products.forEach(function(product) {
+                        const cantidad = product.cantidad;
+
+                        const addButton = $('<button>+</button>')
+                            .css({ margin: '0 7px' })
+                            .click(function() {
+                            modifyProductQuantity(product, cantidad + 1);
+                        });
+                        const lessButton = $('<button>-</button>')
+                            .css({ margin: '0 7px' })
+                            .click(function() {
+                            modifyProductQuantity(product, cantidad - 1);
+                        });
+
+                        const row = $('<tr></tr>');
+                        row.html(`
+                                <td>${product.id}</td>
+                                <td>${product.name}</td>
+                                <td>${product.price}</td>
+                                <td>${product.brand}</td>
+                                <td>${cantidad}</td>
+                                <td></td>
+
+                            `);
+                        row.find('td:last').append(addButton).append(lessButton);
+                        tableBody.append(row);
+
+                    });
+                } else {
+                    tableBody.html('<tr><td colspan="5">No hay productos disponibles.</td></tr>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al obtener los productos:', error);
+                $('#products-table tbody').html('<tr><td colspan="5">Error al obtener los productos.</td></tr>');
+            }
+        });
+    }
+
+    function modifyProductQuantity(product, cantidad) {
+        if (cantidad < 0) {
+            console.error('La cantidad no puede ser menor a 0.');
+            return;
+        }
+
+        const updatedProduct = {
+            name: product.name,
+            description: product.description,
+            brand: product.brand,
+            cantidad: cantidad,
+            price: product.price,
+            attributes: product.attributes // <-- Si es `null`, verifica que el backend lo maneje
+        };
+
+        $.ajax({
+            url: `/products/${product.id}`, // <-- Asegúrate de que `product.id` no sea `undefined`
+            method: 'PATCH',
+            contentType: 'application/json',
+            data: JSON.stringify(updatedProduct), // <-- Asegúrate de que `updatedProduct` es correcto
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+            },
+            success: function(response) {
+                getProducts();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al aumentar la cantidad del producto:', error);
+                // alert('Hubo un error al aumentar la cantidad del producto.');
+            }
+        });
+    }
+
+
+    $(document).ready(function() {
+        const userRole = localStorage.getItem('userRole');
+        if (userRole !== 'ADMIN') {
+            window.location.href = '/';
+            return;
+        }
+        getProducts();
+    });
+
+    $(document).ready(function() {
+        const authDropdownContainer = $('#authDropdownContainer');
+
+        function updateAuthDropdown() {
+            const accessToken = localStorage.getItem('accessToken');
+            const userRole = localStorage.getItem('userRole');
+            const authDropdownContainer = $('#authDropdownContainer');
+
+            if (accessToken) {
+                const dropdownHtml = `
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="authDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Menú
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="authDropdown">
+                    <li><a class="dropdown-item" href="/product">Productos</a> </li>
+                    <li><a class="dropdown-item" href="/pedido">Mis pedidos</a></li>
+                    ${userRole === 'ADMIN' ? `
+                    <li class="dropdown-submenu">
+                        <a class="dropdown-item" href="#" id="adminMenu">Admin</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/lista_pedidos">Lista de Pedidos</a></li>
+                            <li><a class="dropdown-item" href="/stocks">Lista de productos</a></li>
+                            <li><a class="dropdown-item" href="/product_create">Crear producto</a></li>
+                            <li><a class="dropdown-item" href="/validator">Validaciones de pedido</a></li>
+                        </ul>
+                    </li>
+                    ` : ''}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" id="logoutLink">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        `;
+                authDropdownContainer.html(dropdownHtml);
+
+                $('#logoutLink').on('click', function (event) {
+                    event.preventDefault();
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('userRole');
+                    location.reload();
+                });
+            } else {
+                authDropdownContainer.html(`
+            <button class="btn" id="loginButton">Iniciar Sesión</button>
+        `);
+
+                $('#loginButton').on('click', function () {
+                    window.location.href = '/login';
+                });
+            }
+        }
+
+        // Initial rendering of the dropdown or login button
+        updateAuthDropdown();
+    });
+</script>
+</body>
+</html>

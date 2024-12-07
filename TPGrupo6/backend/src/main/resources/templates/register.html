@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrarse</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f8f9fa;
+    }
+    .register-container {
+      width: 400px;
+      height: 400px;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+    }
+    .register-container h2 {
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: #007bff;
+    }
+    .form-control:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    .register-message {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .login-link-btn {
+      display: block;
+      margin-top: 1rem;
+      text-align: center;
+      color: #007bff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .login-link-btn:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="register-container">
+  <h2>Registrarse</h2>
+  <form id="registerForm">
+    <div class="form-group">
+      <label for="email">Correo Electrónico</label>
+      <input type="email" class="form-control" id="email" placeholder="Ingresa tu correo" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Contraseña</label>
+      <input type="password" class="form-control" id="password" placeholder="Ingresa tu contraseña" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Registrar</button>
+  </form>
+  <div id="registerMessage" class="register-message"></div>
+  <a href="/login" class="login-link-btn">Ya tenes cuenta? Inicia Sesión</a>
+</div>
+
+<script>
+  $('#registerForm').on('submit', function(e) {
+    e.preventDefault();
+    const email = $('#email').val();
+    const password = $('#password').val();
+
+    $.ajax({
+      url: '/users/register',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ username: email, password: password }),
+      success: function(response) {
+        $('#registerMessage').html('<p class="text-success">Registro exitoso</p>');
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 1000);
+      },
+      error: function(xhr) {
+        $('#registerMessage').html('<p class="text-danger">' + xhr.responseText + '</p>');
+      }
+    });
+  });
+</script>
+</body>
+</html>

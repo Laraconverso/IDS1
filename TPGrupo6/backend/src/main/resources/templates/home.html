@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supermercado Online - Home</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #f8c102, #ff8b00);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .container {
+      max-width: 900px;
+      text-align: center;
+      padding-top: 8%;
+      color: #2c3e50;
+    }
+    header {
+      width: 100%;
+      position: absolute;
+      top: 0;
+      display: flex;
+      justify-content: flex-end;
+      padding: 1rem 2rem;
+    }
+    .logout-link {
+      color: #ffffff;
+      font-size: 0.9rem;
+      text-decoration: none;
+      font-weight: bold;
+      border: 1px solid #ffffff;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+    .logout-link:hover {
+      background-color: #ffffff;
+      color: #ff8b00;
+    }
+    h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    p {
+      font-size: 1.2rem;
+      color: #2c3e50;
+      margin-top: 1rem;
+    }
+    footer {
+      background-color: #2c3e50;
+      color: #f8f9fa;
+      text-align: center;
+      padding: 2rem;
+    }
+    footer p {
+      margin: 0.5rem 0;
+    }
+    footer a {
+      color: #ff8b00;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+    .btn-comprar {
+      background-color: #2c3e50;
+      color: #ffffff;
+      font-size: 1.2rem;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      border: none;
+      transition: background-color 0.3s;
+      margin-top: 50px;
+    }
+    .btn-comprar:hover {
+      background-color: #576a79;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+    <a type="reset" id="authLink" class="logout-link">Cerrar Sesión</a>
+</header>
+
+<div class="container">
+  <h1>Bienvenido a Supermercado Online</h1>
+  <p>Tu mercado de confianza, ahora a un clic de distancia. Explora una amplia variedad de productos frescos y de calidad desde la comodidad de tu hogar.</p>
+  <button class="btn-comprar" onclick="window.location.href='/product'">Comprar ahora</button>
+</div>
+
+<footer>
+  <p style="color:#ff8b00">&copy; 2024 Supermercado Online</p>
+  <p style="color:#ff8b00">Contáctanos: <a href="mailto:contacto@supermercadoonline.com">contacto@supermercadoonline.com</a> | Tel: +123 456 7890</p>
+  <p style="color:#ff8b00" >Ubicación: Avenida de los Comercios, 123, Ciudad de Ejemplo</p>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    const authLink = $('#authLink');
+
+    function updateAuthLink() {
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+        authLink.text('Cerrar Sesión');
+        authLink.off('click').on('click', function(event) {
+          event.preventDefault();
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('username');
+          localStorage.removeItem('userRole');
+          updateAuthLink(); // Update link text after logging out
+        });
+      } else {
+        authLink.text('Iniciar Sesión');
+        authLink.off('click').on('click', function(event) {
+          event.preventDefault();
+          window.location.href = '/login';
+        });
+      }
+    }
+
+    updateAuthLink();
+  });
+</script>
+
+
+</body>
+</html>

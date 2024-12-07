@@ -1,0 +1,688 @@
+{
+	"info": {
+		"_postman_id": "3e48cd2c-f2db-4385-9358-7e016bb482c5",
+		"name": "IS1-G6",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18034972"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Users listAll",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response body to JSON\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Check if the token is present in the response\r",
+									"if (jsonData.accessToken) {\r",
+									"    // Save the token to an environment variable\r",
+									"    pm.globals.set(\"ACCESS_TOKEN\", jsonData.accessToken);\r",
+									"\r",
+									"    // Optionally log a success message\r",
+									"    console.log(\"Token saved to environment variable: authToken\");\r",
+									"} else {\r",
+									"    console.log(\"No token found in the response.\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"YO\",\n  \"surname\": \"ejemplo\",\n  \"username\": \"ejemplo.yo@example.com\",\n  \"age\": 23,\n  \"picture\": \"http://example.com/profile-pic.jpg\",\n  \"gender\": \"female\",\n  \"address\": \"Aca vivo yo\",\n  \"role\": \"USER\",\n  \"password\": \"Password124\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/register",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response body to JSON\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Check if the token is present in the response\r",
+									"if (jsonData.accessToken) {\r",
+									"    // Save the token to an environment variable\r",
+									"    pm.globals.set(\"ACCESS_TOKEN\", jsonData.accessToken);\r",
+									"\r",
+									"    // Optionally log a success message\r",
+									"    console.log(\"Token saved to environment variable: authToken\");\r",
+									"} else {\r",
+									"    console.log(\"No token found in the response.\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"yo@mail.com\",\n  \"password\": \"1234\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response body to JSON\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Check if the token is present in the response\r",
+									"if (jsonData.accessToken) {\r",
+									"    // Save the token to an environment variable\r",
+									"    pm.globals.set(\"ACCESS_TOKEN\", jsonData.accessToken);\r",
+									"\r",
+									"    // Optionally log a success message\r",
+									"    console.log(\"Token saved to environment variable: authToken\");\r",
+									"} else {\r",
+									"    console.log(\"No token found in the response.\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin@admin.com\",\n  \"password\": \"admin\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John\",\n    \"surname\": \"Doe\",\n    \"email\": \"john.doe@cambio_mi_email.com\",\n    \"age\": 30,\n    \"picture\": \"http://example.com/profile-pic.jpg\",\n    \"gender\": \"male\",\n    \"address\": \"123 Main St, Springfield, USA\",\n    \"type\": \"ADMIN\",\n    \"password\": \"soyelAdmin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Validations",
+			"item": [
+				{
+					"name": "Get all validators",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/validators",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"validators"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create combination validator",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\": \"TypeCombinationValidation\",\r\n  \"attributeType\": \"color\",\r\n  \"attributeValues\": [\"red\", \"blue\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/validators",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"validators"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create quantity validator",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\": \"QuantityValidation\",\r\n  \"maxCantidad\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/validators",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"validators"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create sum validator",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\": \"SumMaxValidation\",\r\n  \"attributeType\": \"weight\",\r\n  \"attributeMaxValue\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/validators",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"validators"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create count max validator",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\": \"CountMaxValidation\",\r\n  \"attributeType\": \"weight\",\r\n  \"attributeValue\": \"red\",\r\n  \"attributeMaxValueCount\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/validators",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"validators"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Create product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Producto A\",\r\n  \"description\": \"Descripción\",\r\n  \"brand\": \"hola\",\r\n  \"cantidad\": 10,\r\n  \"attributes\": [\r\n    {\r\n        \"type\": \"color\",\r\n        \"itsValue\": \"rojo\"\r\n    },\r\n    {\r\n        \"type\": \"weight\",\r\n        \"itsValue\": \"5\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/products",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE3MzI3NzU0MzgsImV4cCI6MTczMjc3NzIzOCwicm9sZSI6IkFETUlOIn0.IsDa92ZHC5nQ_kl_6YXQu1cvrpFRdLXAShiu6uZYO7E",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Pantalon\",\r\n    \"description\": \"Pantalon negro\",\r\n    \"brand\": \"gucci\",\r\n    \"cantidad\": 3,\r\n    \"attributes\": [\r\n        {\r\n            \"id\": 4,\r\n            \"type\": \"color\",\r\n            \"itsValue\": \"black\"\r\n        },\r\n        {\r\n            \"id\": 5,\r\n            \"type\": \"weight\",\r\n            \"itsValue\": \"2\"\r\n        },\r\n        {\r\n            \"id\": 6,\r\n            \"type\": \"type\",\r\n            \"itsValue\": \"solid\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/products/2",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"products",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/products",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pedidos",
+			"item": [
+				{
+					"name": "Get all pedidos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/pedidos",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pedidos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all pedidos by username",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/pedidos/user/admin@admin.com",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pedidos",
+								"user",
+								"admin@admin.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create pedido",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"products\": [\r\n    {\r\n        \"id\": 4,\r\n        \"cantidad\": 3\r\n    }\r\n  ],\r\n  \"estado\": \"CONFIRMADO\",\r\n  \"fecha\": \"2024-11-18T00:00:00\",\r\n  \"username\": \"yo@mail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/pedidos",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pedidos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel pedido",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/pedidos/cancel/1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pedidos",
+								"cancel",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

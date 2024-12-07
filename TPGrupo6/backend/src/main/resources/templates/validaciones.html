@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <div class="header">
+    <h1>Lista de validaciones</h1>
+    <div id="authDropdownContainer"></div>
+  </div>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    h1 {
+      text-align: center;
+      color: #f4f4f9;
+    }
+
+    .table-header {
+      background-color: #007bff;
+      color: white;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .modal-open-btn {
+      background-color: #007bff;
+      color: white;
+      font-size: 24px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-open-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .attributes-list {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    .attributes-list li {
+      margin-bottom: 5px;
+    }
+
+    .delete-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: darkred;
+    }
+  </style>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+<div class="container mt-4">
+  <table class="table table-bordered">
+    <thead>
+    <tr class="table-header">
+      <th>Tipo</th>
+      <th>Atributos</th>
+      <th>Borrar</th>
+    </tr>
+    </thead>
+    <tbody id="validationTableBody">
+    </tbody>
+  </table>
+</div>
+
+<!-- Add Validation Button -->
+<button class="modal-open-btn" data-bs-toggle="modal" data-bs-target="#validationModal">+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="validationModal" tabindex="-1" aria-labelledby="validationModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="validationModalLabel">Agregar Nueva Validación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="validationForm">
+          <div class="mb-3">
+            <label for="validationType" class="form-label">Tipo</label>
+            <select class="form-select" id="validationType" required>
+              <option value="">Selecciona un tipo</option>
+              <option value="TypeCombinationValidation">TypeCombinationValidation</option>
+              <option value="QuantityValidation">QuantityValidation</option>
+              <option value="SumMaxValidation">SumMaxValidation</option>
+              <option value="CountMaxValidation">CountMaxValidation</option>
+            </select>
+          </div>
+          <div id="dynamicFields"></div>
+          <button type="submit" class="btn btn-primary">Agregar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  const validationForm = document.getElementById('validationForm');
+  const validationTypeSelect = document.getElementById('validationType');
+  const dynamicFieldsContainer = document.getElementById('dynamicFields');
+  const validationTableBody = document.getElementById('validationTableBody');
+
+  // Handle dynamic fields based on validation type
+  validationTypeSelect.addEventListener('change', () => {
+    const type = validationTypeSelect.value;
+    dynamicFieldsContainer.innerHTML = '';
+
+    if (type === 'TypeCombinationValidation') {
+      dynamicFieldsContainer.innerHTML = `
+                    <div class="mb-3">
+                        <label for="attributeType" class="form-label">Attribute Type</label>
+                        <input type="text" id="attributeType" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="attributeValues" class="form-label">Attribute Values (comma-separated)</label>
+                        <input type="text" id="attributeValues" class="form-control" required>
+                    </div>
+                `;
+    } else if (type === 'QuantityValidation') {
+      dynamicFieldsContainer.innerHTML = `
+                    <div class="mb-3">
+                        <label for="maxCantidad" class="form-label">Max Cantidad</label>
+                        <input type="number" id="maxCantidad" class="form-control" required>
+                    </div>
+                `;
+    } else if (type === 'SumMaxValidation') {
+      dynamicFieldsContainer.innerHTML = `
+                    <div class="mb-3">
+                        <label for="attributeType" class="form-label">Attribute Type</label>
+                        <input type="text" id="attributeType" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="attributeMaxValue" class="form-label">Attribute Max Value</label>
+                        <input type="number" id="attributeMaxValue" class="form-control" required>
+                    </div>
+                `;
+    } else if (type === 'CountMaxValidation') {
+      dynamicFieldsContainer.innerHTML = `
+                    <div class="mb-3">
+                        <label for="attributeType" class="form-label">Attribute Type</label>
+                        <input type="text" id="attributeType" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="attributeValue" class="form-label">Attribute Value</label>
+                        <input type="text" id="attributeValue" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="attributeMaxValueCount" class="form-label">Attribute Max Value Count</label>
+                        <input type="number" id="attributeMaxValueCount" class="form-control" required>
+                    </div>
+                `;
+    }
+  });
+
+  // Handle form submission and update the table
+  validationForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    $.ajax({
+      url: '/validators',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(buildPayload(validationTypeSelect.value)),
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+      },
+      success: (response) => {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+          <td>${validationTypeSelect.value}</td>
+          <td>
+            <ul class="attributes-list">
+              ${Array.from(dynamicFieldsContainer.querySelectorAll('input'))
+                .map(input => `<li><strong>${input.id}:</strong> ${input.value}</li>`)
+                .join('')}
+            </ul>
+          </td>
+          <td>
+            <button class="delete-btn" data-id="${response.id}">Eliminar</button>
+          </td>`;
+        validationTableBody.appendChild(newRow);
+        newRow.querySelector('.delete-btn').addEventListener('click', () => deleteValidation(response.id, newRow));
+        const modal = bootstrap.Modal.getInstance(document.getElementById('validationModal'));
+        modal.hide();
+      },
+      error: function(xhr, status, error) {
+        if (xhr.status === 403) {
+          window.location.href = "/login";
+        }
+        console.error('Error:', error)
+      }
+    });
+  });
+
+  function deleteValidation(id, rowElement) {
+    $.ajax({
+      url: `/validators/${id}`,
+      type: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+      },
+      success: () => {
+        rowElement.remove();
+      },
+      error: function(xhr, status, error) {
+        if (xhr.status === 403) {
+          window.location.href = "/login";
+        }
+        console.error('Error:', error)
+      }
+    });
+  }
+
+  function buildPayload(type) {
+    let payload = { type };
+
+    if (type === 'TypeCombinationValidation') {
+      payload.attributeType = document.getElementById('attributeType').value;
+      payload.attributeValues = document.getElementById('attributeValues').value.split(',').map(val => val.trim());
+
+    } else if (type === 'QuantityValidation') {
+      payload.maxCantidad = parseInt(document.getElementById('maxCantidad').value, 10);
+
+    } else if (type === 'SumMaxValidation') {
+      payload.attributeType = document.getElementById('attributeType').value;
+      payload.attributeMaxValue = parseInt(document.getElementById('attributeMaxValue').value, 10);
+
+    } else if (type === 'CountMaxValidation') {
+      payload.attributeType = document.getElementById('attributeType').value;
+      payload.attributeValue = document.getElementById('attributeValue').value;
+      payload.attributeMaxValueCount = parseInt(document.getElementById('attributeMaxValueCount').value, 10);
+    }
+
+    return payload;
+  }
+  // Function to load initial data
+  function loadInitialData() {
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'ADMIN') {
+      window.location.href = '/';
+      return;
+    }
+    $.ajax({
+      url: '/validators',
+      type: 'GET',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+      },
+      success: (data) => {
+        data.forEach(validator => {
+          addRowToTable(validator);
+        });
+      },
+      error: (xhr, status, error) => console.error('Error fetching validators:', error)
+    });
+  }
+
+  // Function to add a row to the table
+  function addRowToTable(validator) {
+    const newRow = document.createElement('tr');
+    let attributesHTML = '';
+
+    // Generate attributes HTML based on the validator type
+    if (validator.type === 'TypeCombinationValidation') {
+      attributesHTML = `
+      <li><strong>Attribute Type:</strong> ${validator.attributeType}</li>
+      <li><strong>Attribute Values:</strong> ${validator.attributeValues.join(', ')}</li>`;
+    } else if (validator.type === 'QuantityValidation') {
+      attributesHTML = `<li><strong>Max Cantidad:</strong> ${validator.maxCantidad}</li>`;
+    } else if (validator.type === 'SumMaxValidation') {
+      attributesHTML = `
+      <li><strong>Attribute Type:</strong> ${validator.attributeType}</li>
+      <li><strong>Attribute Max Value:</strong> ${validator.attributeMaxValue}</li>`;
+    } else if (validator.type === 'CountMaxValidation') {
+      attributesHTML = `
+      <li><strong>Attribute Type:</strong> ${validator.attributeType}</li>
+      <li><strong>Attribute Value:</strong> ${validator.attributeValue}</li>
+      <li><strong>Attribute Max Value Count:</strong> ${validator.attributeMaxValueCount}</li>`;
+    }
+
+    newRow.innerHTML = `
+    <td>${validator.type}</td>
+    <td>
+      <ul class="attributes-list">
+        ${attributesHTML}
+      </ul>
+    </td>
+    <td>
+      <button class="delete-btn" data-id="${validator.id}">Eliminar</button>
+    </td>`;
+
+    validationTableBody.appendChild(newRow);
+
+    // Attach delete event to the delete button
+    newRow.querySelector('.delete-btn').addEventListener('click', () => deleteValidation(validator.id, newRow));
+  }
+
+  // Call `loadInitialData` when the page loads
+  document.addEventListener('DOMContentLoaded', loadInitialData);
+
+  $(document).ready(function() {
+    const authDropdownContainer = $('#authDropdownContainer');
+
+    function updateAuthDropdown() {
+      const accessToken = localStorage.getItem('accessToken');
+      const userRole = localStorage.getItem('userRole');
+      const authDropdownContainer = $('#authDropdownContainer');
+
+      if (accessToken) {
+        const dropdownHtml = `
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="authDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Menú
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="authDropdown">
+                    <li><a class="dropdown-item" href="/product">Productos</a> </li>
+                    <li><a class="dropdown-item" href="/pedido">Mis pedidos</a></li>
+                    ${userRole === 'ADMIN' ? `
+                    <li class="dropdown-submenu">
+                        <a class="dropdown-item" href="#" id="adminMenu">Admin</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/lista_pedidos">Lista de Pedidos</a></li>
+                            <li><a class="dropdown-item" href="/stocks">Lista de productos</a></li>
+                            <li><a class="dropdown-item" href="/product_create">Crear producto</a></li>
+                            <li><a class="dropdown-item" href="/validator">Validaciones de pedido</a></li>
+                        </ul>
+                    </li>
+                    ` : ''}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" id="logoutLink">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        `;
+        authDropdownContainer.html(dropdownHtml);
+
+        $('#logoutLink').on('click', function (event) {
+          event.preventDefault();
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('username');
+          localStorage.removeItem('userRole');
+          location.reload();
+        });
+      } else {
+        authDropdownContainer.html(`
+            <button class="btn" id="loginButton">Iniciar Sesión</button>
+        `);
+
+        $('#loginButton').on('click', function () {
+          window.location.href = '/login';
+        });
+      }
+    }
+
+    // Initial rendering of the dropdown or login button
+    updateAuthDropdown();
+  });
+</script>
+</body>
+
+</html>

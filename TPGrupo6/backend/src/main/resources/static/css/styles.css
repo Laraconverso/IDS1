@@ -1,0 +1,273 @@
+.single-product-card {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.header {
+    background-color: #343a40;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0;
+}
+
+.header {
+    position: relative; /* Establishes a positioning context */
+}
+
+.logout-link {
+    position: absolute; /* Positions the button inside .header */
+    top: 50%;           /* Vertically centers the button */
+    right: 20px;        /* Aligns the button to the right */
+    transform: translateY(-50%); /* Ensures vertical centering */
+    color: #ffffff;
+    font-size: 0.9rem;
+    text-decoration: none;
+    font-weight: bold;
+    border: 1px solid #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    transition: background 0.3s, color 0.3s;
+    margin-right: 50px;
+}
+.logout-link:hover {
+    background-color: #ffffff;
+    color: #343a40;
+}
+.dropdown-submenu {
+    position: relative;
+    z-index: 1050;
+}
+
+.dropdown-submenu .dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 100%;
+    top: 0;
+    margin-top: -1px;
+    z-index: 9999; /* Ensure it's very high */
+    background-color: white; /* Optional: Better visibility */
+    border: 1px solid #ddd; /* Optional: Match your dropdown style */
+}
+
+.dropdown-submenu:hover .dropdown-menu {
+    display: block;
+}
+
+
+.btn-success{
+    margin-bottom: 5px;
+}
+
+#cartButton {
+    position: absolute; /* Positions the button inside .header */
+    top: 50%;           /* Vertically centers the button */
+    right: 20px;        /* Aligns the button to the right */
+    transform: translateY(-50%); /* Ensures vertical centering */
+    background: none;   /* Removes background */
+    border: none;       /* Removes border */
+    z-index: 9999;
+    padding: 0;         /* Removes extra padding */
+    cursor: pointer;    /* Keeps it clickable */
+}
+
+.header i {
+    font-size: 1.5rem;  /* Adjusts icon size */
+    color: white;       /* Sets icon color */
+}
+
+.search-container {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.product-card {
+    margin-bottom: 30px;
+}
+.product-card {
+     position: static; /* Ensure no new stacking context */
+     z-index: auto; /* Reset z-index if set */
+ }
+
+.product-card .card {
+    position: static; /* Same for nested containers */
+    z-index: auto;
+}
+
+#product-list {
+    margin-top: 20px;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 1rem;
+}
+
+.modal-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.modal-body {
+    display: flex;
+    align-items: center;
+}
+
+.modal-body img {
+    max-width: 200px;
+    margin-right: 20px;
+}
+
+.product-item {
+    margin-bottom: 15px;
+}
+
+.product-image {
+    display: block;
+    margin-bottom: 10px;
+    border-radius: 5px; /* Bordes redondeados opcionales */
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #ccc; /* Color del separador */
+    margin: 15px 0;
+}
+
+
+/* Estilos generales para las alertas */
+.alert {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50; /* Verde por defecto (éxito) */
+    color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    z-index: 1000;
+    display: none;
+    width: 300px;
+    text-align: center;
+}
+
+/* Alerta de éxito */
+.alert.success {
+    background-color: #4CAF50; /* Verde */
+}
+
+/* Alerta de error */
+.alert.error {
+    background-color: #f44336; /* Rojo */
+}
+
+#customAlert button {
+    background-color: transparent;
+    border: none;
+    color: #721c24;
+    font-size: 20px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+#customAlert button:hover {
+    color: #f1f1f1;
+}#dropdownMenu {
+     position: absolute;
+     top: 50%; /* Vertically centers it relative to the header */
+     right: 60px; /* Aligns it slightly to the left of the logout button */
+     transform: translateY(-50%); /* Ensures perfect vertical centering */
+ }
+
+#dropdownMenu .dropdown-toggle {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    transition: background 0.3s, color 0.3s;
+}
+
+#dropdownMenu .dropdown-toggle:hover {
+    background-color: #ffffff;
+    color: #343a40;
+}
+
+#dropdownMenu .dropdown-menu {
+    background-color: #f8f9fa; /* Light background for the dropdown menu */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#dropdownMenu .dropdown-item {
+    font-size: 0.9rem;
+    color: #343a40;
+}
+
+#dropdownMenu .dropdown-item:hover {
+    background-color: #e9ecef;
+    color: #000;
+}
+
+#dropdownMenu .dropdown-divider {
+    border-top: 1px solid #ccc;
+}#authDropdownContainer {
+     position: absolute; /* Ensure it's positioned relative to the header */
+     top: 50%;           /* Vertically centers the button or dropdown */
+     right: 20px;        /* Aligns it to the right */
+     transform: translateY(-50%); /* Ensures proper vertical centering */
+ }
+
+#authDropdownContainer .btn {
+    background-color: #ffffff; /* Optional styling for the button */
+    color: #343a40;
+    border: 1px solid #ffffff;
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    transition: background 0.3s, color 0.3s;
+    margin-right: 50px;
+}
+
+#authDropdownContainer .btn:hover {
+    background-color: #343a40; /* Optional hover effect */
+    color: #ffffff;
+}
+.search-container {
+    position: relative;
+    z-index: 1; /* Lower than the dropdown menu */
+}
+
+.productSearchInput {
+    z-index: 1; /* Lower than the dropdown menu */
+}
+#authDropdownContainer {
+    z-index: 1000; /* Higher than the search bar */
+}
+
+.dropdown-menu {
+    z-index: 9999; /* Ensure the dropdown itself is above everything */
+}
+.dropdown-menu {
+    z-index: 1050 !important; /* Bootstrap dropdown default is 1050 */
+}

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Producto</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding-top: 50px;
+        }
+        h1 {
+            text-align: center;
+            color: #f4f4f9;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="submit"] {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0577f1;
+        }
+        .attribute-row {
+
+        }
+        .attribute-row input {
+            width: 48%;
+            display: inline-block;
+        }
+        .add-attribute-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .add-attribute-btn:hover {
+            background-color: #0577f1;
+        }
+        .attribute-list {
+            width: 90%;
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .attribute-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .remove-attribute-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .remove-attribute-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Crear Nuevo Producto</h1>
+        <div id="authDropdownContainer"></div>
+    </div>
+
+    <div class="container">
+
+        <form id="create-product-form">
+            <label for="name">Nombre</label> <br>
+            <input type="text" id="name" name="name" required><br>
+
+            <label for="description">Descripción</label><br>
+            <input type="text" id="description" name="description" required><br>
+
+            <label for="price">Precio</label><br>
+            <input type="text" id="price" name="price" required><br>
+
+            <label for="brand">Marca</label><br>
+            <input type="text" id="brand" name="brand" required><br>
+
+            <label for="cantidad">Cantidad</label><br>
+            <input type="text" id="cantidad" name="cantidad" required><br>
+
+            <label for="attributes">Atributos</label><br>
+            <div class="attribute-list" id="attributes"></div><br>
+            
+            <div class="attribute-row">
+                <input type="text" id="attribute-type" placeholder="Tipo (Ej. Color)" class="attribute-type"> <br>
+                <input type="text" id="attribute-value" placeholder="Valor (Ej. Rojo)" class="attribute-value">
+            </div><br>
+            <button type="button" class="add-attribute-btn">Agregar Atributo</button><br>
+
+            <input type="submit" value="Crear Producto"><br>
+        </form>
+        <div id="response-message" style="text-align: center; margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const userRole = localStorage.getItem('userRole');
+            if (userRole !== 'ADMIN') {
+                window.location.href = '/';
+                return;
+            }
+            let attributes = [];
+
+            $('.add-attribute-btn').click(function() {
+                const type = $('#attribute-type').val().trim();
+                const value = $('#attribute-value').val().trim();
+
+                if (type && value) {
+                    attributes.push({ type: type, itsValue: value });
+
+                    $('#attribute-type').val('');
+                    $('#attribute-value').val('');
+
+                    displayAttributes();
+                } else {
+                    alert('Por favor ingrese tanto el tipo como el valor del atributo');
+                }
+            });
+
+            function displayAttributes() {
+                const attributesDiv = $('#attributes');
+                attributesDiv.empty();
+
+                if (attributes.length === 0) {
+                    attributesDiv.hide(); // Hide if no attributes
+                } else {
+                    attributesDiv.show(); // Show if attributes exist
+                    attributes.forEach((attr, index) => {
+                        attributesDiv.append(`
+                    <div class="attribute-item">
+                        <span>${attr.type}: ${attr.itsValue}</span>
+                        <button type="button" class="remove-attribute-btn" data-index="${index}">Eliminar</button>
+                    </div>
+                `);
+                    });
+
+                    $('.remove-attribute-btn').click(function() {
+                        const index = $(this).data('index');
+                        attributes.splice(index, 1);
+                        displayAttributes();
+                    });
+                }
+            }
+
+            $('#create-product-form').on('submit', function(event) {
+                event.preventDefault();
+
+                const name = $('#name').val();
+                const price = $('#price').val();
+                const description = $('#description').val();
+                const brand = $('#brand').val();
+                const cantidad = $('#cantidad').val();
+
+                const productData = {
+                    name: name,
+                    description: description,
+                    brand: brand,
+                    attributes: attributes,
+                    cantidad: cantidad,
+                    price: price
+                };
+
+                $.ajax({
+                    url: '/products',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(productData),
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+                    },
+                    success: function(response) {
+                        $('#response-message').html('<p style="color: green;">Producto creado con éxito</p>');
+                        $('#create-product-form')[0].reset();
+                        attributes = [];
+                        displayAttributes();
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 403) {
+                            window.location.href = "/login";
+                        }
+                        $('#response-message').html('<p style="color: red;">Error al crear el producto: ' + error + '</p>');
+                    }
+                });
+            });
+
+            // Initially hide the attributes div
+            $('#attributes').hide();
+        });
+        $(document).ready(function() {
+            const authDropdownContainer = $('#authDropdownContainer');
+
+            function updateAuthDropdown() {
+                const accessToken = localStorage.getItem('accessToken');
+                const userRole = localStorage.getItem('userRole');
+                const authDropdownContainer = $('#authDropdownContainer');
+
+                if (accessToken) {
+                    const dropdownHtml = `
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="authDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Menú
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="authDropdown">
+                    <li><a class="dropdown-item" href="/product">Productos</a> </li>
+                    <li><a class="dropdown-item" href="/pedido">Mis pedidos</a></li>
+                    ${userRole === 'ADMIN' ? `
+                    <li class="dropdown-submenu">
+                        <a class="dropdown-item" href="#" id="adminMenu">Admin</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/lista_pedidos">Lista de Pedidos</a></li>
+                            <li><a class="dropdown-item" href="/stocks">Lista de productos</a></li>
+                            <li><a class="dropdown-item" href="/product_create">Crear producto</a></li>
+                            <li><a class="dropdown-item" href="/validator">Validaciones de pedido</a></li>
+                        </ul>
+                    </li>
+                    ` : ''}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" id="logoutLink">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        `;
+                    authDropdownContainer.html(dropdownHtml);
+
+                    $('#logoutLink').on('click', function (event) {
+                        event.preventDefault();
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('username');
+                        localStorage.removeItem('userRole');
+                        location.reload();
+                    });
+                } else {
+                    authDropdownContainer.html(`
+            <button class="btn" id="loginButton">Iniciar Sesión</button>
+        `);
+
+                    $('#loginButton').on('click', function () {
+                        window.location.href = '/login';
+                    });
+                }
+            }
+
+            // Initial rendering of the dropdown or login button
+            updateAuthDropdown();
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis pedidos</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+    }
+    .container {
+      width: 80%;
+      margin: 0 auto;
+      padding-top: 50px;
+    }
+    h1 {
+      text-align: center;
+      color: #f4f4f9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+    button {
+      padding: 5px 15px;
+      font-size: 14px;
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ddd;
+      cursor: not-allowed;
+    }
+    .message {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="header">
+  <h1>Lista de pedidos</h1>
+  <div id="authDropdownContainer"></div>
+</div>
+<div class="container">
+  <table id="pedidos-table">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Estado</th>
+      <th>Fecha</th>
+      <th>Productos</th>
+      <th>Cancelar Pedido</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <div id="message" class="message"></div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === null) {
+      window.location.href = '/';
+      return;
+    }
+
+    function getPedidos() {
+      $.ajax({
+        url: '/pedidos/user/' + localStorage.getItem("username"),
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+        },
+        success: function(data) {
+          const tableBody = $('#pedidos-table tbody');
+          tableBody.empty();
+
+          if (Array.isArray(data) && data.length > 0) {
+            data.forEach(function(pedido) {
+              const cantidadProductos = pedido.products.reduce((total, product) => total + product.cantidad, 0);
+
+              // Parse the LocalDateTime string into a JavaScript Date object
+              const fecha = new Date(pedido.fecha);// ISO 8601 string will be automatically parsed
+              const currentTime = new Date();
+              const hoursDifference = (currentTime - fecha) / (1000 * 60 * 60);
+              fecha.setHours(fecha.getHours() - 3);
+              const fechaFormateada = fecha.toLocaleString('es-ES');
+
+              // Verificar si debe deshabilitarse
+              const cancelButtonDisabled =
+                      hoursDifference > 24 ||
+                      pedido.estado === "PROCESADO" ||
+                      pedido.estado === "CANCELADO" ||
+                      pedido.estado === "ENVIADO";
+
+              const cancelButtonText = cancelButtonDisabled
+                      ? 'Fue cancelado'
+                      : 'Cancelar Pedido';
+
+              const row = $('<tr></tr>');
+              row.html(`
+                    <td>${pedido.id}</td>
+                    <td>${pedido.estado}</td>
+                    <td>${fechaFormateada}</td> <!-- Formato de fecha legible -->
+                    <td>${cantidadProductos}</td>
+                    <td>
+                    <button
+                      ${cancelButtonDisabled ? 'disabled' : ''}
+                      onclick="cancelPedido(${pedido.id})">
+                      ${cancelButtonText}
+                    </button>
+                    </td>
+              `);
+              tableBody.append(row);
+            });
+          } else {
+            tableBody.html('<tr><td colspan="5">No hay pedidos disponibles.</td></tr>');
+          }
+        },
+        error: function(xhr, status, error) {
+          if (xhr.status === 403) {
+            window.location.href = "/login";
+          }
+          console.error('Error al obtener los pedidos:', error);
+          $('#message').text('Error al obtener los pedidos.').addClass('error');
+        }
+      });
+    }
+
+    window.cancelPedido = function(pedidoId) {
+      $.ajax({
+        url: `/pedidos/cancel/${pedidoId}`,
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+        },
+        success: function(response) {
+          console.log(`Pedido ${pedidoId} cancelado exitosamente.`);
+          $('#message').text('Pedido cancelado exitosamente.').addClass('success').removeClass('error');
+          getPedidos();
+        },
+        error: function(xhr, status, error) {
+          if (xhr.status === 403) {
+            window.location.href = "/login";
+          }
+          console.error(`Error al cancelar el pedido ${pedidoId}:`, error);
+          $('#message').text('Error al cancelar el pedido.').addClass('error').removeClass('success');
+        }
+      });
+    }
+
+    getPedidos();
+  });
+  $(document).ready(function() {
+    const authDropdownContainer = $('#authDropdownContainer');
+
+    function updateAuthDropdown() {
+      const accessToken = localStorage.getItem('accessToken');
+      const userRole = localStorage.getItem('userRole');
+      const authDropdownContainer = $('#authDropdownContainer');
+
+      if (accessToken) {
+        const dropdownHtml = `
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="authDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Menú
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="authDropdown">
+                    <li><a class="dropdown-item" href="/product">Productos</a> </li>
+                    <li><a class="dropdown-item" href="/pedido">Mis pedidos</a></li>
+                    ${userRole === 'ADMIN' ? `
+                    <li class="dropdown-submenu">
+                        <a class="dropdown-item" href="#" id="adminMenu">Admin</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/lista_pedidos">Lista de Pedidos</a></li>
+                            <li><a class="dropdown-item" href="/stocks">Lista de productos</a></li>
+                            <li><a class="dropdown-item" href="/product_create">Crear producto</a></li>
+                            <li><a class="dropdown-item" href="/validator">Validaciones de pedido</a></li>
+                        </ul>
+                    </li>
+                    ` : ''}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" id="logoutLink">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        `;
+        authDropdownContainer.html(dropdownHtml);
+
+        $('#logoutLink').on('click', function (event) {
+          event.preventDefault();
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('username');
+          localStorage.removeItem('userRole');
+          location.reload();
+        });
+      } else {
+        authDropdownContainer.html(`
+            <button class="btn" id="loginButton">Iniciar Sesión</button>
+        `);
+
+        $('#loginButton').on('click', function () {
+          window.location.href = '/login';
+        });
+      }
+    }
+
+    // Initial rendering of the dropdown or login button
+    updateAuthDropdown();
+  });
+</script>
+</body>
+</html>
