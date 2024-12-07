@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+  mariadb:
+    image: "mariadb"
+    restart: "on-failure:3"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "products"
+    volumes:
+      - "./data/mariadb:/var/lib/mysql"
+
+  backend:
+    build: "./backend"
+    depends_on:
+      - "mariadb"
+    restart: "on-failure:3"
+    environment:
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "${DB_ROOT_PASSWORD}"
+      SPRING_DATASOURCE_URL: "jdbc:mariadb://mariadb:3306/products"
+    ports:
+      - "${BACKEND_EXTERNAL_PORT}:8080"
+
+  phpmyadmin:
+    image: "phpmyadmin"
+    depends_on:
+      - "mariadb"
+    restart: "on-failure:3"
+    environment:
+      PMA_HOST: "mariadb"
+    ports:
+      - "127.0.0.1:${PHPMYADMIN_EXTERNAL_PORT}:80"
